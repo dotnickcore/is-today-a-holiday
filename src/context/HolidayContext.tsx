@@ -23,13 +23,13 @@ export default function HolidayProvider({
         return;
       }
 
-      // Initialize Holidays (memoized per country/state)
+      // initialize Holidays (memoized per country/state)
       const hdObject = new Holidays(input.country, input.state);
 
-      // Check holiday - properly typed now
+      // check holiday - properly typed now
       const result = hdObject.isHoliday(input.date);
 
-      // Handle both array and false cases
+      // handle both array and false cases
       if (Array.isArray(result) && result.length > 0) {
         console.log(result);
         setIsHoliday(result[0]);
