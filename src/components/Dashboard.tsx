@@ -14,6 +14,25 @@ function Dashboard() {
   const { watch, handleSubmit } = formMethods;
   const formValues = watch();
 
+  /**
+   * PERFORMANCE OPTIMIZATION EXPLANATION:
+   *
+   * 1. useCallback for onSubmit:
+   * - Prevents recreation of the submit function on every render
+   * - Only recreates when handleIsTodayAHoliday changes (dependency array)
+   * - Maintains referential equality between renders
+   *
+   * 2. Stable useEffect dependencies:
+   * - onSubmit reference now remains consistent between renders
+   * - Effect only re-runs when formValues change (actual data changes)
+   * - Avoids infinite re-render loops from unstable dependencies
+   *
+   * BENEFITS:
+   * - Prevents unnecessary effect executions
+   * - Eliminates "changing dependencies" warnings
+   * - Optimizes component rendering performance
+   */
+
   // Memoize the submit handler with useCallback
   const onSubmit = useCallback<SubmitHandler<IFormInput>>(
     (data) => {
