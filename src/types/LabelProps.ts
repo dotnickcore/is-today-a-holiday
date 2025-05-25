@@ -1,5 +1,5 @@
 export type LabelProps = {
-    htmlFor: string,
-    labelClassName?: string;
-    children: React.ReactNode;
-}
+  htmlFor: string;
+  labelClassName?: string;
+  children: React.ReactNode;
+};
