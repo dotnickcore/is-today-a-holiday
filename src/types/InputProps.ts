@@ -6,4 +6,5 @@ export type InputProps<T extends FieldValues> = {
   inputClassName?: string;
   type?: string;
   placeholder?: string;
+  defaultValue?: string | number; 
 }

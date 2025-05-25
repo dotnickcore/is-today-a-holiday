@@ -1,7 +1,7 @@
+import type { HolidaysTypes } from 'date-holidays';
 import type { IFormInput } from '../interfaces/IFormInput';
-import type { Holiday } from '../types/HolidayProps';
 
 export interface IHolidayContextValue {
-  isHoliday: Holiday | null;
+  isHoliday: undefined | false | HolidaysTypes.Holiday;
   handleIsTodayAHoliday: (input: IFormInput) => void;
 }

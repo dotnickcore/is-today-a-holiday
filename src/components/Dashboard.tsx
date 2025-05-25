@@ -1,53 +1,52 @@
 import { useForm, type SubmitHandler } from 'react-hook-form';
+import { useEffect, useMemo } from 'react';
+import { useHolidayContext } from '../hooks/useHolidayContext';
 import { Form } from './ui/Form';
 import Label from './ui/Label';
 import Container from './ui/Container';
 import { Select } from './ui/Select';
-import type { IFormInput } from '../interfaces/IFormInput';
 import Input from './ui/Input';
-import { useCallback, useEffect } from 'react';
-import { useHolidayContext } from '../hooks/useHolidayContext';
+import type { IFormInput } from '../interfaces/IFormInput';
 
 function Dashboard() {
   const formMethods = useForm<IFormInput>();
+  const { watch } = formMethods;
+
   const { handleIsTodayAHoliday } = useHolidayContext();
-  const { watch, handleSubmit } = formMethods;
-  const formValues = watch();
 
-  /**
-   * PERFORMANCE OPTIMIZATION EXPLANATION:
-   *
-   * 1. useCallback for onSubmit:
-   * - Prevents recreation of the submit function on every render
-   * - Only recreates when handleIsTodayAHoliday changes (dependency array)
-   * - Maintains referential equality between renders
-   *
-   * 2. Stable useEffect dependencies:
-   * - onSubmit reference now remains consistent between renders
-   * - Effect only re-runs when formValues change (actual data changes)
-   * - Avoids infinite re-render loops from unstable dependencies
-   *
-   * BENEFITS:
-   * - Prevents unnecessary effect executions
-   * - Eliminates "changing dependencies" warnings
-   * - Optimizes component rendering performance
-   */
+  /* ---------- 1. watch just the individual fields ---------- */
+  const [country, state, date] = watch(['country', 'state', 'date']);
 
-  // Memoize the submit handler with useCallback
-  const onSubmit = useCallback<SubmitHandler<IFormInput>>(
-    (data) => {
-      console.log(data);
-      handleIsTodayAHoliday(data);
-    },
-    [handleIsTodayAHoliday] // Only recreates when handleIsTodayAHoliday changes
+  /* ---------- 2. do the lookup whenever the 3 fields are set ---------- */
+  useEffect(() => {
+    if (country && state && date) {
+      handleIsTodayAHoliday({ country, state, date });
+    }
+  }, [country, state, date, handleIsTodayAHoliday]);
+
+  /* ---------- 3. normal submit handler (optional) ---------- */
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+    handleIsTodayAHoliday(data);
+  };
+
+  const countryOptions = useMemo(
+    () => [{ value: 'AU', label: 'Australia' }],
+    []
   );
 
-  // Now useEffect has stable dependencies
-  useEffect(() => {
-    if (formValues.country && formValues.state && formValues.date) {
-      handleSubmit(onSubmit)();
-    }
-  }, [formValues, handleSubmit, onSubmit]);
+  const stateOptions = useMemo(
+    () => [
+      { value: 'NSW', label: 'New South Wales' },
+      { value: 'VIC', label: 'Victoria' },
+      { value: 'QLD', label: 'Queensland' },
+      { value: 'WA', label: 'Western Australia' },
+      { value: 'SA', label: 'South Australia' },
+      { value: 'TAS', label: 'Tasmania' },
+      { value: 'ACT', label: 'Australian Capital Territory' },
+      { value: 'NT', label: 'Northern Territory' },
+    ],
+    []
+  );
 
   return (
     <Form formMethods={formMethods} onSubmit={onSubmit}>
@@ -58,38 +57,33 @@ function Dashboard() {
         <Select
           name="country"
           register={formMethods.register}
-          options={[{ value: 'AU', label: 'Australia ' }]}
+          options={countryOptions}
+          defaultValue={countryOptions[0].value}
           selectClassName="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </Container>
+
       <Container>
         <Label htmlFor="state" labelClassName="block text-gray-700 mb-2">
-          Select a State
+          Select a state
         </Label>
         <Select
           name="state"
           register={formMethods.register}
-          options={[
-            { value: 'NSW', label: 'New South Wales' },
-            { value: 'VIC', label: 'Victoria' },
-            { value: 'QLD', label: 'Queensland' },
-            { value: 'WA', label: 'Western Australia' },
-            { value: 'SA', label: 'South Australia' },
-            { value: 'TAS', label: 'Tasmania' },
-            { value: 'ACT', label: 'Australian Capital Terrority' },
-            { value: 'NT', label: 'Northern Terrority' },
-          ]}
+          options={stateOptions}
+          defaultValue={stateOptions[0].value}
           selectClassName="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </Container>
+
       <Container>
         <Label htmlFor="date" labelClassName="block text-gray-700 mb-2">
-          Select a Date
+          Select a date
         </Label>
         <Input
           name="date"
-          register={formMethods.register}
           type="date"
+          register={formMethods.register}
           inputClassName="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </Container>

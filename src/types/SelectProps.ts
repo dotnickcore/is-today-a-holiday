@@ -10,4 +10,5 @@ export type SelectProps<T extends FieldValues> = {
   register: UseFormRegister<T>;
   options: SelectOption[];
   selectClassName?: string;
+  defaultValue?: string; 
 };
