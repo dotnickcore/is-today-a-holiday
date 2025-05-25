@@ -1,3 +1,4 @@
+import { formatDate } from '../util/formatDate';
 import Container from './ui/Container';
 
 function Result() {
@@ -7,7 +8,9 @@ function Result() {
         <p className="text-green-800 font-medium">Yes, there is a holiday!</p>
         <Container containerClassName="mt-2">
           <p className="text-green-800 font-medium">Name: Australia Day</p>
-          <p className="text-green-800 font-medium">Date: January 26, 2025</p>
+          <p className="text-green-800 font-medium">
+            Date: {formatDate('2025-05-16')}
+          </p>
         </Container>
       </Container>
 

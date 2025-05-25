@@ -6,19 +6,21 @@ import { Select } from './ui/Select';
 import type { IFormInput } from '../interfaces/IFormInput';
 import Input from './ui/Input';
 import { useEffect } from 'react';
+import { useHolidayContext } from '../hooks/useHolidayContext';
 
 function Dashboard() {
   const formMethods = useForm<IFormInput>();
+  const { handleIsTodayAHoliday } = useHolidayContext();
   const { watch, handleSubmit } = formMethods;
 
   const formValues = watch();
 
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
     console.log(data);
+    handleIsTodayAHoliday(data);
   };
 
   useEffect(() => {
-    // Check if all required fields have values
     if (formValues.country && formValues.state && formValues.date) {
       handleSubmit(onSubmit)();
     }
