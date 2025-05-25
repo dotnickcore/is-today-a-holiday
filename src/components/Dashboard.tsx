@@ -5,26 +5,30 @@ import Container from './ui/Container';
 import { Select } from './ui/Select';
 import type { IFormInput } from '../interfaces/IFormInput';
 import Input from './ui/Input';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useHolidayContext } from '../hooks/useHolidayContext';
 
 function Dashboard() {
   const formMethods = useForm<IFormInput>();
   const { handleIsTodayAHoliday } = useHolidayContext();
   const { watch, handleSubmit } = formMethods;
-
   const formValues = watch();
 
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    console.log(data);
-    handleIsTodayAHoliday(data);
-  };
+  // Memoize the submit handler with useCallback
+  const onSubmit = useCallback<SubmitHandler<IFormInput>>(
+    (data) => {
+      console.log(data);
+      handleIsTodayAHoliday(data);
+    },
+    [handleIsTodayAHoliday] // Only recreates when handleIsTodayAHoliday changes
+  );
 
+  // Now useEffect has stable dependencies
   useEffect(() => {
     if (formValues.country && formValues.state && formValues.date) {
       handleSubmit(onSubmit)();
     }
-  }, [formValues, handleSubmit]);
+  }, [formValues, handleSubmit, onSubmit]);
 
   return (
     <Form formMethods={formMethods} onSubmit={onSubmit}>

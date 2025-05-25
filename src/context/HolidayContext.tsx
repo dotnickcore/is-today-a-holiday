@@ -12,6 +12,9 @@ export default function HolidayProvider({
 }) {
   const [isHoliday, setIsHoliday] = useState<Holiday | null>(null);
 
+  // useCallback: Memoizes the function itself to prevent recreation on every render.
+  // - Only recreates if dependencies change (empty array [] = never recreates)
+  // - Prevents unnecessary re-renders of components that receive this function
   const handleIsTodayAHoliday = useCallback((input: IFormInput) => {
     try {
       if (!input.country || !input.state || !input.date) {
@@ -41,6 +44,9 @@ export default function HolidayProvider({
     }
   }, []);
 
+  // useMemo: Memoizes the computed context value object
+  // - Only recalculates when isHoliday or handleIsTodayAHoliday changes
+  // - Prevents unnecessary context updates and consumer re-renders
   const value: IHolidayContextValue = useMemo(
     () => ({
       isHoliday,
